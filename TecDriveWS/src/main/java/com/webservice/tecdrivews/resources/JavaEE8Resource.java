@@ -13,8 +13,9 @@ public class JavaEE8Resource {
     
     @GET
     public Response ping(){
+        String retorno = "ok";
         return Response
-                .ok("ping")
+                .ok(retorno)
                 .build();
     }
 }
