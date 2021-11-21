@@ -3,45 +3,65 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.webservice.json;
 
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.io.FileReader;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class JSONHandler {
-
-    public JSONHandler() {
-               
+    
+    JSONObject json;
+       
+    public JSONHandler (){ //Cargar JSON
+        readJSON();
     }
     
-    public JSONObject readJSON(){
+    public void readJSON () { //Leer JSON en la ruta especificada
         
-        
-        String resourceName = "C:\\Users\\agust\\OneDrive\\Documents\\NetBeansProjects\\TecDriveWS\\TecDriveWS\\src\\main\\java\\com\\webservice\\json\\TecDrive.json";
-        
-        InputStream is;
+        JSONParser parser = new JSONParser();
+     
         try {
-            is = new FileInputStream(resourceName);
-        
-            if (is == null) {
-               throw new NullPointerException("Cannot find resource file " + resourceName);
-           }
-           JSONTokener tokener = new JSONTokener(is);
-           JSONObject object = new JSONObject(tokener);
-
-           return object;
-        } 
-        catch (FileNotFoundException ex) {
-            Logger.getLogger(JSONHandler.class.getName()).log(Level.SEVERE, null, ex);
+			Object obj = parser.parse(new FileReader("C:\\Users\\agust\\OneDrive\\Documents\\NetBeansProjects\\TecDriveWS\\TecDriveWS\\src\\main\\java\\com\\webservice\\json\\TecDrive.json"));
+ 
+			// A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
+                        
+			this.json = (JSONObject) obj;
         }
-        return null;
+        catch (Exception e) { //Capturar error y desplegarlo en pantalla
+            JSONObject obj = new JSONObject();
+            obj.put("Error", e.toString());
+            this.json = obj;
+	}
     }
+    
+    
+    public JSONObject getDrive(String key){ //Obtener Drive de un usuario dado
+        
+        JSONObject obj = (JSONObject) this.json.get((Object) key);
+        
+        
+        if ( obj != null){
+            return obj;
+        }
+        
+        obj = new JSONObject();
+        obj.put("Error", "El usuario consultado no fue encontrado ");
+        return obj;    
+    }
+    
+    public JSONObject getJson() { //Retornar toda la Database
+        return json;
+    }
+    
+    
+    
+      
+    
+    
 }

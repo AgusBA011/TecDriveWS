@@ -5,7 +5,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import com.webservice.json.JSONHandler;
-import org.json.JSONObject;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -14,18 +17,16 @@ import org.json.JSONObject;
 @Path("javaee8")
 public class JavaEE8Resource {
     
+    private final JSONHandler handler;
+    
+    public JavaEE8Resource() throws IOException, FileNotFoundException, ParseException{
+        this.handler = new JSONHandler();
+    }
+    
     @GET
     public Response ping(){
         return Response
-                .ok(test())
-                .build();
+            .ok(handler.getJson())
+            .build();
     }
-    
-    
-    private JSONObject test(){
-        JSONHandler handler = new JSONHandler();
-        return handler.readJSON();
-    }
-    
-    
 }
