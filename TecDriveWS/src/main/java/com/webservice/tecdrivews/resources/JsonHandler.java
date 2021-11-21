@@ -8,6 +8,7 @@ package com.webservice.tecdrivews.resources;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,6 +35,27 @@ public class JsonHandler {
     
     public JSONObject patata(){
     return(JSONObject) prueba.get((Object) "Usuario_2");
+    }
+    
+    public JSONArray getPath(String path){
+        String[] listaPath = path.split("/");
+        JSONObject UsuarioJson = (JSONObject) prueba.get((Object) listaPath[0]);
+        JSONArray ContenidoJson = (JSONArray) UsuarioJson.get((Object) "contenido");
+        JSONObject aux = null;
+        
+        for(int num = 1; num < listaPath.length; num++){
+            
+            for(int i = 0; i < ContenidoJson.size(); i++){
+                aux = (JSONObject) ContenidoJson.get(i);
+                if(aux.get((Object) "nombre").toString().equals(listaPath[num])){
+                    ContenidoJson = (JSONArray) aux.get((Object) "contenido");
+                   }
+            }
+                    
+        }
+        return ContenidoJson;
+        
+ 
     }
     
     

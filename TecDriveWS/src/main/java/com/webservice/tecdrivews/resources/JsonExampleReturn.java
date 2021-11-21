@@ -22,7 +22,7 @@ public class JsonExampleReturn {
     public Response ping(){
         
         return Response
-                .ok(parser.patata())
+                .ok(parser.getPath("Usuario_1/Compartidos/Usuario 2"))
                 .build();
     }
 }
