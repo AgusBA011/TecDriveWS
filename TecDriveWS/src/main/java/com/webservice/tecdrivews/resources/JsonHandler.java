@@ -16,12 +16,14 @@ import org.json.simple.parser.ParseException;
  *
  * @author Admin
  */
-public class JsonHandler {
+public final class JsonHandler {
     
+    private static JsonHandler instancia;
     private final JSONParser parser = new JSONParser();
     JSONObject prueba;
     
-    public JsonHandler() throws FileNotFoundException, IOException, ParseException{
+    private JsonHandler() throws FileNotFoundException, IOException, ParseException{
+        
         try {
 			Object obj = parser.parse(new FileReader("D:/User/Escritorio/prueba.json"));
  
@@ -33,9 +35,6 @@ public class JsonHandler {
 		}
     }
     
-    public JSONObject patata(){
-    return(JSONObject) prueba.get((Object) "Usuario_2");
-    }
     
     public JSONArray getPath(String path){
         String[] listaPath = path.split("/");
@@ -47,16 +46,47 @@ public class JsonHandler {
             
             for(int i = 0; i < ContenidoJson.size(); i++){
                 aux = (JSONObject) ContenidoJson.get(i);
-                if(aux.get((Object) "nombre").toString().equals(listaPath[num])){
+                if(aux.get((Object) "tipo").toString().equals("carpeta") && aux.get((Object) "nombre").toString().equals(listaPath[num])){
                     ContenidoJson = (JSONArray) aux.get((Object) "contenido");
-                   }
-            }
-                    
+                }
+                else{
+                JSONArray errorJson = new JSONArray();
+                errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
+                return errorJson;
+                
+                }
+            }   
         }
         return ContenidoJson;
-        
- 
     }
     
+    public JSONObject deleteElement(String path, String[] nombre, String[] tiposArchivo){
+        JSONArray Directorio = getPath(path);
+        JSONObject resultado = new JSONObject();
+        
+        for(int i = 0; i < nombre.length; i++){
+            if (Directorio.size() >= 1){
+                resultado = (JSONObject) Directorio.get(i);
+                if(resultado.get((Object) "nombre").toString().equals(nombre[i]) && (resultado.get((Object) "extension").toString().equals(tiposArchivo[i]) || resultado.get((Object) "tipo").toString().equals(tiposArchivo[i])))
+                { 
+                    Directorio.remove(i);
+                }
+            }else {
+                JSONObject errorJson = new JSONObject();
+                errorJson.put("error", "Nada que borrar");
+                return errorJson;
+            }
+        }
+        
+                JSONObject errorJson = new JSONObject();
+                errorJson.put("msj", "Elemento(s) removido(s) correctamente");
+                return errorJson;
+    }
     
+    public static JsonHandler getInstancia() throws IOException, FileNotFoundException, ParseException{
+        if(instancia == null){
+            instancia = new JsonHandler();
+        }
+        return instancia;
+    }
 }

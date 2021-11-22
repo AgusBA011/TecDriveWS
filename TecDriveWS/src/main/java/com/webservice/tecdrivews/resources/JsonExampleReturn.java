@@ -13,16 +13,14 @@ import org.json.simple.parser.ParseException;
  */
 @Path("jsonR")
 public class JsonExampleReturn {
-    private final JsonHandler parser;
-
-    public JsonExampleReturn() throws IOException, FileNotFoundException, ParseException {
-        this.parser = new JsonHandler();
-    }
+    
+    
+    
     @GET
-    public Response ping(){
+    public Response ping() throws IOException, FileNotFoundException, ParseException{
         
         return Response
-                .ok(parser.getPath("Usuario_1/Compartidos/Usuario 2"))
+                .ok(JsonHandler.getInstancia().getPath("Usuario_1/Compartidos/Usuario 2/"))
                 .build();
     }
 }
