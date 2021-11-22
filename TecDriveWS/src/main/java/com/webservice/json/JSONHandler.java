@@ -179,6 +179,28 @@ public class JSONHandler {
     }
     
     
+    public JSONObject getArchivo(String path, String nombre, String extension){
+    
+        JSONArray directorio = getPath(path);
+
+        for (int i=0; i < directorio.size(); i++){
+            JSONObject objectInArray = (JSONObject) directorio.get(i);
+            if ( ((String) objectInArray.get("tipo")).equals("archivo")){
+                if ( nombre.equals((String) objectInArray.get("name"))  && extension.equals((String) objectInArray.get("extension"))){     
+                    //Se encontró el file
+                    return objectInArray;
+                }
+            }   
+        }
+        
+        //NO DEBERÍA PASAR
+        JSONObject response = new JSONObject ();
+        response.put("Error", "Hubo un problema");
+        return response; 
+    }
+    
+    
+    
     //Funcion que revisa si hay un archivo con el mismo nombre en la carpeta
     private Boolean checkRepeat(JSONObject newElement, JSONArray jsonArray){
         
