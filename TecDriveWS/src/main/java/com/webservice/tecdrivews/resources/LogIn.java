@@ -9,11 +9,11 @@ import javax.ws.rs.core.Response;
  *
  * @author 
  */
-@Path("LogIn/{user}")
+@Path("LogIn/")
 public class LogIn {
     
     @GET
-    public Response logInEndpoint(@PathParam("user") String user){
+    public Response logInEndpoint(@QueryParam("user") String user){
         JSONHandler handler = JSONHandler.getInstance();
         return Response
             .ok(handler.getDrive(user))

@@ -21,12 +21,23 @@ import org.json.simple.parser.JSONParser;
 
 public class JSONHandler {
     
+    /*
+    ==============================
+        VARIABLES
+    ==============================
+    */
+    
     private static JSONHandler instance;
     
     JSONObject json;
     
     final String pathFile = "C:\\Users\\agust\\OneDrive\\Documents\\NetBeansProjects\\TecDriveWS\\TecDriveWS\\src\\main\\java\\com\\webservice\\json\\TecDrive.json";
     
+    /*
+    ==============================
+        SINGLETON
+    ==============================
+    */
     private JSONHandler (){ //Constructor, cargar JSON
         readJSON();
     }
@@ -39,7 +50,13 @@ public class JSONHandler {
         return instance;
     }    
     
-    public void readJSON () { //Leer JSON en la ruta especificada
+    /*
+    ==============================
+        FUNCIONES
+    ==============================
+    */
+    
+    private void readJSON () { //Leer JSON en la ruta especificada
         
         JSONParser parser = new JSONParser();
      
@@ -57,7 +74,80 @@ public class JSONHandler {
 	}
     }
     
-    public JSONObject getDrive(String key){ //Obtener Drive de un usuario dado
+    //Inserta un elemento en una ruta dada.
+    public JSONObject insertContenido(String path, JSONObject contenido){
+    
+        JSONArray directorio = getPath(path);
+        JSONObject response = new JSONObject();
+               
+        if (!checkRepeat( contenido, directorio) || directorio == null){
+            response.put("Error", "El nombre '" + (String) contenido.get("nombre") + "' ya existe en la ruta actual.");
+            return response;
+        }
+        
+        directorio.add(contenido);
+        response.put("OK", "Se insertó el contenido con éxito");
+        updateJSONFile();
+        return response; 
+    }
+    
+    //Elimina un elemento en una ruta dada.
+    public JSONObject deleteElement(String path, String[] nombre, String[] tiposArchivo){
+        JSONArray Directorio = getPath(path);
+        JSONObject resultado = new JSONObject();
+        
+        for(int i = 0; i < nombre.length; i++){
+            if (Directorio.size() >= 1){
+                resultado = (JSONObject) Directorio.get(i);
+                if(resultado.get((Object) "nombre").toString().equals(nombre[i]) && (resultado.get((Object) "extension").toString().equals(tiposArchivo[i]) || resultado.get((Object) "tipo").toString().equals(tiposArchivo[i])))
+                { 
+                    Directorio.remove(i);
+                }
+            }else {
+                JSONObject errorJson = new JSONObject();
+                errorJson.put("Error", "Nada que borrar");
+                return errorJson;
+            }
+        }
+        
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("msj", "Elemento(s) removido(s) correctamente");
+        return errorJson;
+    }
+    
+    //Obtiene la ruta dada.
+    public JSONArray getPath(String path){
+        String[] listaPath = path.split("/");
+        JSONObject UsuarioJson = getDrive(listaPath[0]);
+        JSONArray ContenidoJson = (JSONArray) UsuarioJson.get((Object) "contenido");
+        JSONObject aux = null;
+        
+        for(int num = 1; num < listaPath.length; num++){
+            for(int i = 0; i < ContenidoJson.size(); i++){
+                aux = (JSONObject) ContenidoJson.get(i);
+                if(aux.get((Object) "tipo").toString().equals("carpeta") && aux.get((Object) "nombre").toString().equals(listaPath[num])){
+                    ContenidoJson = (JSONArray) aux.get((Object) "contenido");
+                }
+                else{
+                    JSONArray errorJson = new JSONArray();
+                    errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
+                    return errorJson;
+                }
+            }   
+        }
+        return ContenidoJson;
+    }
+   
+    
+    
+    /*
+    ==============================
+        FUNCIONES AUXILIARES
+    ==============================
+    */
+    
+    //Obtener Drive de un usuario dado
+    public JSONObject getDrive(String key){ 
         
         JSONObject obj = (JSONObject) this.json.get((Object) key);
         
@@ -69,62 +159,8 @@ public class JSONHandler {
         obj.put("Error", "El usuario consultado no fue encontrado ");
         return obj;    
     }
-        
-    public JSONObject getJson() { //Retornar toda la Database
-        return json;
-    }
     
-    public JSONObject insertContenido(String path, JSONObject contenido){
-    
-        JSONArray carpeta = getPath(path);
-        JSONObject response = new JSONObject();
-        
-        if (!checkRepeat( (String) contenido.get("nombre"), carpeta) || carpeta == null){
-            response.put("Error", "Ya existe un elemento con el mismo nombre");
-            return response;
-        }
-        
-        carpeta.add(contenido);
-        response.put("OK", "Se insertó el contenido con éxito");
-        updateJSONFile();
-        return response; 
-    }
-    
-    public JSONArray getPath(String path){
-        String[] listaPath = path.split("/");
-        
-        JSONObject UsuarioJson = getDrive(listaPath[0]);
-  
-        //JSONObject UsuarioJson = (JSONObject) prueba.get((Object) listaPath[0]);
-        JSONArray ContenidoJson = (JSONArray) UsuarioJson.get((Object) "contenido");
-        JSONObject aux = null;
-        
-        for(int num = 1; num < listaPath.length; num++){
-            
-            for(int i = 0; i < ContenidoJson.size(); i++){
-                aux = (JSONObject) ContenidoJson.get(i);
-                if(aux.get((Object) "nombre").toString().equals(listaPath[num])){
-                    ContenidoJson = (JSONArray) aux.get((Object) "contenido");
-                   }
-            }         
-        }
-        return ContenidoJson;
-    }
-    
-    public Boolean checkRepeat(String newName, JSONArray jsonArray){
-          
-        for(  int i = 0; i < jsonArray.size(); i++ ){
-        
-            JSONObject objectInArray = (JSONObject) jsonArray.get(i);
-            
-            if ( newName.equals((String) objectInArray.get("name"))){
-            
-                return false;
-            }
-        }
-        return true;
-    }
-    
+    //Agarra el JSON actual y lo escribe en la ruta
     public void updateJSONFile(){
     
         //Write into the file
@@ -137,7 +173,30 @@ public class JSONHandler {
             }
     }
     
-      
+    //Retornar toda la Database
+    public JSONObject getJson() { 
+        return json;
+    }
     
     
+    //Funcion que revisa si hay un archivo con el mismo nombre en la carpeta
+    private Boolean checkRepeat(JSONObject newElement, JSONArray jsonArray){
+        
+        String eleName = (String) newElement.get("nombre");        
+        String eleTipo = (String) newElement.get("tipo");
+        
+        //Itera por cada archivo o carpeta en la ruta dada.
+        for(  int i = 0; i < jsonArray.size(); i++ ){
+            JSONObject objectInArray = (JSONObject) jsonArray.get(i);            
+            if ( eleName.equals((String) objectInArray.get("name"))){
+                if ( eleTipo.equals("archivo") ){ //Intentando insertar un archivo
+                    if (  ((String) newElement.get("extension")).equals((String)objectInArray.get("extension"))){
+                      return false; //Archivo con el mismo nombre y misma extensión                 
+                    }
+                }
+                else{return false;} //Carpeta con el mismo nombre       
+            }            
+        }
+        return true;
+    }
 }

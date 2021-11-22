@@ -15,13 +15,13 @@ import org.json.simple.JSONObject;
  *
  * @author 
  */
-@Path("Register/{user}")
+@Path("Register/")
 public class Register {
     
     @GET
-    public Response registerEndpoint(@PathParam("user") String user){
+    public Response registerEndpoint(@QueryParam("nombre") String user, @QueryParam("bytes") int bytes){
         
-        JSONObject response = createUser(user);
+        JSONObject response = createUser(user, bytes);
         
         return Response
             .ok(response)
@@ -29,7 +29,7 @@ public class Register {
     }
     
     
-    private JSONObject createUser( String username ){
+    private JSONObject createUser( String username, int bytes ){
     
         JSONHandler handler = JSONHandler.getInstance();
         
@@ -46,8 +46,11 @@ public class Register {
             Carpeta carpeta = new Carpeta("root");
             JSONObject json = carpeta.generateJSON();
             
+            json.put("limite", bytes); //Agrega el limite de bytes del usuario.
+            
             drive.put(username, json);//Insertar en el drive principal
-
+            handler.updateJSONFile();//Actualizar JSON, CASO UNICO DONDE SE UTILIZA ESTA FUNCION.
+            
             //Enviar response de éxito
             response.put("OK", "El usuario se ha creado con éxito");
             return drive; 
