@@ -15,7 +15,7 @@ public class getDrive {
     @GET
     public Response ping(@PathParam("username") String username){
         
-        JSONHandler handler = new JSONHandler();
+        JSONHandler handler = JSONHandler.getInstance();
         
         return Response
             .ok(handler.getDrive(username))

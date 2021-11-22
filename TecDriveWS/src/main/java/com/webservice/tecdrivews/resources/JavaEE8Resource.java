@@ -1,5 +1,6 @@
 package com.webservice.tecdrivews.resources;
 
+import Models.Carpeta;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -20,13 +21,18 @@ public class JavaEE8Resource {
     private final JSONHandler handler;
     
     public JavaEE8Resource() throws IOException, FileNotFoundException, ParseException{
-        this.handler = new JSONHandler();
+        this.handler = JSONHandler.getInstance();
     }
-    
+        
     @GET
     public Response ping(){
+                  
+        Carpeta carpeta = new Carpeta("newCarpeta");
+        
+        JSONObject response =  handler.insertContenido("Usuario_1/Compartidos/Usuario 2", carpeta.generateJSON());
+        
         return Response
-            .ok(handler.getJson())
-            .build();
+                .ok(response)
+                .build();
     }
 }
