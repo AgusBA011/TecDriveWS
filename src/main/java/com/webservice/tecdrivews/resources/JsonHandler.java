@@ -8,6 +8,9 @@ package com.webservice.tecdrivews.resources;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,15 +47,22 @@ public final class JsonHandler {
         
         for(int num = 1; num < listaPath.length; num++){
             
+            int errores = 0;
+            
             for(int i = 0; i < ContenidoJson.size(); i++){
                 aux = (JSONObject) ContenidoJson.get(i);
                 if(aux.get((Object) "tipo").toString().equals("carpeta") && aux.get((Object) "nombre").toString().equals(listaPath[num])){
                     ContenidoJson = (JSONArray) aux.get((Object) "contenido");
+                    System.out.println(aux.get((Object) "tipo").toString() + "  "+ aux.get((Object) "nombre").toString());
+                    System.out.println("carpeta" + "  " + listaPath[num]);
                 }
                 else{
-                JSONArray errorJson = new JSONArray();
-                errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
-                return errorJson;
+                    errores++;
+                    if(errores == ContenidoJson.size()){
+                        JSONArray errorJson = new JSONArray();
+                        errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
+                        return errorJson;
+                    }
                 
                 }
             }   
@@ -89,4 +99,25 @@ public final class JsonHandler {
         }
         return instancia;
     }
+    
+    
+    public JSONArray SubirArchivo(String path, String Archivo){
+        
+        try {
+            JSONObject JsonArchivo = (JSONObject) parser.parse(Archivo);
+            JSONArray temp = getPath(path);
+            temp.add(JsonArchivo);
+
+            JSONObject msjJson = new JSONObject();
+            msjJson.put("msj", "Se inserto el archivo correctamente");
+            return temp;
+            
+        } catch (ParseException ex) {
+           
+        }
+        return new JSONArray();
+    }
+    
+    
+    
 }

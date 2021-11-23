@@ -20,7 +20,7 @@ public class JsonExampleReturn {
     public Response ping() throws IOException, FileNotFoundException, ParseException{
         
         return Response
-                .ok(JsonHandler.getInstancia().getPath("Usuario_1/Compartidos/Usuario 2/"))
+                .ok(JsonHandler.getInstancia().getPath("Usuario_1/Compartidos/Usuario 2"))
                 .build();
     }
 }

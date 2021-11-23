@@ -1,0 +1,10 @@
+com\webservice\tecdrivews\resources\JavaEE8Resource.class
+com\webservice\tecdrivews\resources\LogIn.class
+com\webservice\tecdrivews\resources\JavaDelet.class
+com\webservice\tecdrivews\resources\JsonHandler.class
+Models\Carpeta.class
+com\webservice\tecdrivews\resources\getDrive.class
+com\webservice\tecdrivews\resources\JsonExampleReturn.class
+com\webservice\json\JSONHandler.class
+com\webservice\tecdrivews\JAXRSConfiguration.class
+com\webservice\tecdrivews\resources\Register.class
