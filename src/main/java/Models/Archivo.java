@@ -8,10 +8,12 @@ package Models;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import java.lang.String;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -38,9 +40,7 @@ public class Archivo {
         setNombre(nombre);
         
         setTipo("archivo");
-        
-        //setTamano(this.contenido);
-               
+             
         LocalDateTime now = LocalDateTime.now();
         
          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -54,6 +54,8 @@ public class Archivo {
         setCompartido( empty );
        
         setContenido (contenido);
+        
+        setTamano(this.contenido);
         
         setExtension(extension);
         
@@ -118,19 +120,26 @@ public class Archivo {
    
     }
     
-    public static long getStringSizeFile(String str){
-        File file = new File("iofile.txt");
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write(str);
+    public long getStringSizeFile(String str){
+
+        try {       
+            File tempFile = new File("temp.txt");           
+            FileWriter writer = new FileWriter("temp");
+            writer.write(str);                 
+            writer.close();           
+            Path path = Paths.get("temp");
+            long size = Files.size(path);
+            tempFile.deleteOnExit();            
+            return size;            
         }
-        catch(IOException ex){
-            file.delete();
+        catch(Exception e){
+        
             return 0;
         }
-
-        long size = file.length();
-        file.delete(); // cleanup
-        return size;
+        
+            
+            
+        
     }
 
     public ArrayList<String> getCompartido() {

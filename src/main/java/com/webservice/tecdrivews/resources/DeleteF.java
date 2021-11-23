@@ -17,8 +17,8 @@ import org.json.simple.JSONObject;
  *
  * @author Admin
  */
-@Path("delete/")
-public class JavaDelet {
+@Path("Delete/")
+public class DeleteF {
 
     @GET
     public Response deleteArchivoEndpoint(@QueryParam("path") String path, @QueryParam("nombres") String nombres, 
@@ -39,12 +39,8 @@ public class JavaDelet {
         for (int i = 0; i < nombres.length; i++){
             
             JSONObject aux = JSONHandler.getInstance().deleteElement(path, nombres[i], tiposArchivo[i]); 
-            response.put(i, aux);
-            
+            response.put(i, aux);  
         }
         return response;
-    }
-    
-    
-    
+    }    
 }

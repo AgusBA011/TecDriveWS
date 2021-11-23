@@ -61,11 +61,11 @@ public class JSONHandler {
         JSONParser parser = new JSONParser();
      
         try {
-			Object obj = parser.parse(new FileReader(this.pathFile));
- 
-			// A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
-                        
-			this.json = (JSONObject) obj;
+            Object obj = parser.parse(new FileReader(this.pathFile));
+
+            // A JSON object. Key value pairs are unordered. JSONObject supports java.util.Map interface.
+
+            this.json = (JSONObject) obj;
         }
         catch (Exception e) { //Capturar error y desplegarlo en pantalla
             JSONObject obj = new JSONObject();
@@ -79,8 +79,16 @@ public class JSONHandler {
     
         JSONArray directorio = getPath(path);
         JSONObject response = new JSONObject();
-               
-        if (checkRepeat( contenido, directorio) == false){
+        
+        JSONObject verify;
+        
+        if ( ((String) contenido.get("tipo")).equals("carpeta") ){ //En caso de insertar una carpeta
+            verify = getDirectorio(path, (String) contenido.get("nombre") );
+        }else{
+            verify = getArchivo(path, (String) contenido.get("nombre"), (String) contenido.get("extension") );
+        }
+
+        if ( verify.containsKey("Error") == false  ) {
             response.put("Error", "El nombre '" + (String) contenido.get("nombre") + "' ya existe en la ruta actual.");
             return response;
         }
@@ -102,8 +110,7 @@ public class JSONHandler {
             
             resultado = (JSONObject) Directorio.get(i);
             
-            if( ((String) resultado.get((Object) "nombre")).equals(nombre))// && (resultado.get((Object) "extension").toString().equals(tiposArchivo[i]) || resultado.get((Object) "tipo").toString().equals(tiposArchivo[i])))
-            { 
+            if( ( (String) resultado.get((Object) "nombre")).equals(nombre) && (resultado.get((Object) "extension").toString().equals(tiposArchivo) || resultado.get((Object) "tipo").toString().equals(tiposArchivo)))            { 
                 Directorio.remove(i);
                 flagDeleted = 1;
             }
@@ -115,7 +122,7 @@ public class JSONHandler {
             response.put("OK", "Elemento(s) removido(s) correctamente");
             return response;
         }
-        response.put("OK", "Hubo un problema al eliminar el elemento " + nombre);
+        response.put("Error", "Hubo un problema al eliminar el elemento " + nombre);
         return response;
         //
 
@@ -199,45 +206,38 @@ public class JSONHandler {
         JSONArray directorio = getPath(path);
 
         for (int i=0; i < directorio.size(); i++){
+            
             JSONObject objectInArray = (JSONObject) directorio.get(i);
-            if ( ((String) objectInArray.get("tipo")).equals("archivo")){
-                if ( nombre.equals((String) objectInArray.get("name"))  && extension.equals((String) objectInArray.get("extension"))){     
-                    //Se encontró el file
-                    return objectInArray;
-                }
-            }   
+            
+            String objName = (String) objectInArray.get("nombre");
+            String objExt = (String) objectInArray.get("extension");
+            
+            if ( nombre.equals(objName) && extension.equals(objExt)){     
+                //Se encontró el file
+                return objectInArray;
+            } 
+            
         }        
-        //NO DEBERÍA PASAR
+        //No lo encontró
         JSONObject response = new JSONObject ();
         response.put("Error", "Hubo un problema");
         return response; 
     }
     
+    public JSONObject getDirectorio(String path, String nombre){
     
-    
-    //Funcion que revisa si hay un archivo con el mismo nombre en la carpeta
-    private Boolean checkRepeat(JSONObject newElement, JSONArray jsonArray){
-        
-        String eleName = (String) newElement.get("nombre");        
-        String eleTipo = (String) newElement.get("tipo");
-        
-        //Itera por cada archivo o carpeta en la ruta dada.
-        for(  int i = 0; i < jsonArray.size(); i++ ){
-            
-            JSONObject objectInArray = (JSONObject) jsonArray.get(i);
-            
-            if ( eleName.equals((String) objectInArray.get("name"))){
-                
-                if ( eleTipo.equals("archivo") ){ //Intentando insertar un archivo
-                    System.out.println( (String) objectInArray.get("name")  );
-                    if (  ((String) newElement.get("extension")).equals((String)objectInArray.get("extension"))){
-                        
-                      return false; //Archivo con el mismo nombre y misma extensión                 
-                    }
-                }
-                else{return false;} //Carpeta con el mismo nombre       
-            }            
+        JSONArray directorio = getPath(path);
+
+        for (int i=0; i < directorio.size(); i++){
+            JSONObject objectInArray = (JSONObject) directorio.get(i);
+            if ( nombre.equals((String) objectInArray.get("nombre")) ){     
+                //Se encontró el directorio
+                return objectInArray;
+            }  
         }
-        return true;
+        //No lo encontró
+        JSONObject response = new JSONObject ();
+        response.put("Error", "Hubo un problema");
+        return response; 
     }
 }
