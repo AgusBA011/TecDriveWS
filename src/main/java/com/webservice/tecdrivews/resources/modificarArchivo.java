@@ -28,7 +28,7 @@ public class modificarArchivo {
                                             @QueryParam("extension") String extension, @QueryParam("contenido") String contenido)
     {        
         return Response
-            .ok(modificarArchivo(path, nombre, extension, contenido))
+            .ok(modificarArchivo(path, nombre, extension, contenido)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     

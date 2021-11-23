@@ -30,7 +30,7 @@ public class crearCarpeta {
     public Response crearDirectorioEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre)
     {        
         return Response
-            .ok(crearCarpeta(path, nombre))
+            .ok(crearCarpeta(path, nombre)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     

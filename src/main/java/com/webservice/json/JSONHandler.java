@@ -80,7 +80,7 @@ public class JSONHandler {
         JSONArray directorio = getPath(path);
         JSONObject response = new JSONObject();
                
-        if (!checkRepeat( contenido, directorio) || directorio == null){
+        if (checkRepeat( contenido, directorio) == false){
             response.put("Error", "El nombre '" + (String) contenido.get("nombre") + "' ya existe en la ruta actual.");
             return response;
         }
@@ -92,30 +92,36 @@ public class JSONHandler {
     }
     
     //Elimina un elemento en una ruta dada.
-    public JSONObject deleteElement(String path, String[] nombre, String[] tiposArchivo){
+    public JSONObject deleteElement(String path, String nombre, String tiposArchivo){
         JSONArray Directorio = getPath(path);
         JSONObject resultado = new JSONObject();
         
-        for(int i = 0; i < nombre.length; i++){
-            if (Directorio.size() >= 1){
-                resultado = (JSONObject) Directorio.get(i);
-                if(resultado.get((Object) "nombre").toString().equals(nombre[i]) && (resultado.get((Object) "extension").toString().equals(tiposArchivo[i]) || resultado.get((Object) "tipo").toString().equals(tiposArchivo[i])))
-                { 
-                    Directorio.remove(i);
-                }
-            }else {
-                JSONObject errorJson = new JSONObject();
-                errorJson.put("Error", "Nada que borrar");
-                return errorJson;
+        int flagDeleted = 0;
+        
+        for(int i = 0; i < Directorio.size(); i++){
+            
+            resultado = (JSONObject) Directorio.get(i);
+            
+            if( ((String) resultado.get((Object) "nombre")).equals(nombre))// && (resultado.get((Object) "extension").toString().equals(tiposArchivo[i]) || resultado.get((Object) "tipo").toString().equals(tiposArchivo[i])))
+            { 
+                Directorio.remove(i);
+                flagDeleted = 1;
             }
         }
         
-        JSONObject errorJson = new JSONObject();
-        errorJson.put("msj", "Elemento(s) removido(s) correctamente");
-        return errorJson;
+        JSONObject response = new JSONObject();
+        if(flagDeleted == 1){
+            updateJSONFile();
+            response.put("OK", "Elemento(s) removido(s) correctamente");
+            return response;
+        }
+        response.put("OK", "Hubo un problema al eliminar el elemento " + nombre);
+        return response;
+        //
+
     }
-    
-    //Obtiene la ruta dada.
+   
+
     public JSONArray getPath(String path){
         String[] listaPath = path.split("/");
         JSONObject UsuarioJson = getDrive(listaPath[0]);
@@ -123,21 +129,30 @@ public class JSONHandler {
         JSONObject aux = null;
         
         for(int num = 1; num < listaPath.length; num++){
+            
+            int errores = 0;
+            
             for(int i = 0; i < ContenidoJson.size(); i++){
                 aux = (JSONObject) ContenidoJson.get(i);
                 if(aux.get((Object) "tipo").toString().equals("carpeta") && aux.get((Object) "nombre").toString().equals(listaPath[num])){
                     ContenidoJson = (JSONArray) aux.get((Object) "contenido");
+                    System.out.println(aux.get((Object) "tipo").toString() + "  "+ aux.get((Object) "nombre").toString());
+                    System.out.println("carpeta" + "  " + listaPath[num]);
                 }
                 else{
-                    JSONArray errorJson = new JSONArray();
-                    errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
-                    return errorJson;
+                    errores++;
+                    if(errores == ContenidoJson.size()){
+                        JSONArray errorJson = new JSONArray();
+                        errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
+                        return errorJson;
+                    }
+                
                 }
             }   
         }
         return ContenidoJson;
     }
-   
+
     
     
     /*
@@ -191,8 +206,7 @@ public class JSONHandler {
                     return objectInArray;
                 }
             }   
-        }
-        
+        }        
         //NO DEBERÍA PASAR
         JSONObject response = new JSONObject ();
         response.put("Error", "Hubo un problema");
@@ -209,10 +223,15 @@ public class JSONHandler {
         
         //Itera por cada archivo o carpeta en la ruta dada.
         for(  int i = 0; i < jsonArray.size(); i++ ){
-            JSONObject objectInArray = (JSONObject) jsonArray.get(i);            
+            
+            JSONObject objectInArray = (JSONObject) jsonArray.get(i);
+            
             if ( eleName.equals((String) objectInArray.get("name"))){
+                
                 if ( eleTipo.equals("archivo") ){ //Intentando insertar un archivo
+                    System.out.println( (String) objectInArray.get("name")  );
                     if (  ((String) newElement.get("extension")).equals((String)objectInArray.get("extension"))){
+                        
                       return false; //Archivo con el mismo nombre y misma extensión                 
                     }
                 }

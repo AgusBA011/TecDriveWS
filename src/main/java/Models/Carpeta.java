@@ -123,7 +123,7 @@ public class Carpeta {
         
         json.put("modificacion",this.modificacion);  //modificacion
         
-        json.put("tamanno",this.tamanno);  //Tamaño
+        json.put("tamano",this.tamanno);  //Tamaño
         
         json.put("compartido",this.compartido);  //Compartido
         

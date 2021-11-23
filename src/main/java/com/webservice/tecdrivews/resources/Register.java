@@ -24,7 +24,7 @@ public class Register {
         JSONObject response = createUser(user, bytes);
         
         return Response
-            .ok(response)
+            .ok(response).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     

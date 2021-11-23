@@ -24,21 +24,22 @@ import org.json.simple.JSONObject;
 
 @Path("crearArchivo/")
 public class crearArchivo {
-
+    
     @GET
     public Response crearArchivoEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre, 
                                             @QueryParam("extension") String extension, @QueryParam("contenido") String contenido)
     {        
         return Response
-            .ok(crearArchivo(path, nombre, extension, contenido))
+            .ok(crearArchivo(path, nombre, extension, contenido)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     
-    
     private JSONObject crearArchivo( String path, String nombre, String extension, String contenido ){    
+        
         Archivo newArchivo = new Archivo(nombre, extension, contenido);        
         JSONObject archivoJSON = newArchivo.generateJSON();        
         JSONHandler handler = JSONHandler.getInstance();        
+        
         return handler.insertContenido(path, archivoJSON);
     }  
 }

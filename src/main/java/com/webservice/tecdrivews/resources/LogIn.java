@@ -13,10 +13,10 @@ import javax.ws.rs.core.Response;
 public class LogIn {
     
     @GET
-    public Response logInEndpoint(@QueryParam("user") String user){
+    public Response logInEndpoint(@QueryParam("username") String user){
         JSONHandler handler = JSONHandler.getInstance();
         return Response
-            .ok(handler.getDrive(user))
+            .ok(handler.getDrive(user)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     

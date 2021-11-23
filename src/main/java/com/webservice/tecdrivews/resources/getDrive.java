@@ -18,7 +18,7 @@ public class getDrive {
         JSONHandler handler = JSONHandler.getInstance();
         
         return Response
-            .ok(handler.getDrive(username))
+            .ok(handler.getDrive(username)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
 }

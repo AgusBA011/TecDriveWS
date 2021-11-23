@@ -5,6 +5,10 @@
  */
 package Models;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.json.simple.JSONObject;
 import java.lang.String;
@@ -22,11 +26,9 @@ public class Archivo {
     String  creacion;
     String extension;
     String  modificacion;
-    int tamanno;
+    long tamano;
     String contenido;
     ArrayList <String> compartido;
-    
-    static int fileSize = 100;
 
     public Archivo() { //Contructor por JSON
     }
@@ -37,13 +39,15 @@ public class Archivo {
         
         setTipo("archivo");
         
-        setTamanno(fileSize);
+        //setTamano(this.contenido);
                
         LocalDateTime now = LocalDateTime.now();
         
          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         
         setCreacion( now.format(formatter));
+        
+        setModificacion(this.creacion);
         
         ArrayList <String> empty = new ArrayList <String>();
         
@@ -54,7 +58,7 @@ public class Archivo {
         setExtension(extension);
         
     }
-
+    
     public String getExtension() {
         return extension;
     }
@@ -104,12 +108,29 @@ public class Archivo {
         this.modificacion = modificacion;
     }
 
-    public int getTamanno() {
-        return tamanno;
+    public long getTamano() {
+        return tamano;
     }
 
-    public void setTamanno(int tamanno) {
-        this.tamanno = tamanno;
+    public void setTamano(String texto){
+        
+        this.tamano = getStringSizeFile(texto);  
+   
+    }
+    
+    public static long getStringSizeFile(String str){
+        File file = new File("iofile.txt");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            bw.write(str);
+        }
+        catch(IOException ex){
+            file.delete();
+            return 0;
+        }
+
+        long size = file.length();
+        file.delete(); // cleanup
+        return size;
     }
 
     public ArrayList<String> getCompartido() {
@@ -134,7 +155,7 @@ public class Archivo {
         
         json.put("modificacion",this.modificacion);  //modificacion
         
-        json.put("tamanno",this.tamanno);  //Tamaño
+        json.put("tamano",this.tamano);  //Tamaño
         
         json.put("compartido",this.compartido);  //Compartido
         
