@@ -53,6 +53,12 @@ public class modificarArchivo {
         if (sobreescribir){
             Archivo newArchivo = new Archivo(nombre, extension, contenido);
             
+            JSONObject verify = handler.validarLimite(path.split("/")[0], newArchivo.getStringSizeFile(contenido));
+            
+            if(verify.containsKey("Error")){
+                return verify;
+            }
+            
             archivo.replace("contenido", contenido);
             archivo.replace("modificacion",newArchivo.getNowDate());
             archivo.replace("creacion",newArchivo.getNowDate());

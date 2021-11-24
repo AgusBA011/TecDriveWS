@@ -283,7 +283,7 @@ public class JSONHandler {
     }
     
     
-    private JSONObject validarLimite(String username, long tam){
+    public JSONObject validarLimite(String username, long tam){
     
         JSONObject response = new JSONObject ();
         
