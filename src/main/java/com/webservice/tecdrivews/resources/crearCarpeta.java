@@ -50,12 +50,11 @@ public class CrearCarpeta {
             
             carpeta.replace("contenido", new JSONArray());
             
-            carpeta.replace("tamano", 0);
+            carpeta.replace("tamano", 100);
             
             JSONObject response = new JSONObject ();
             response.put("OK", "El archivo fue modificado con éxito");
-            return response;
-            
+            return response;    
         }
         else{
             Carpeta newDirectorio = new Carpeta(nombre);  

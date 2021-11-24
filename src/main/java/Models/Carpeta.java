@@ -26,7 +26,7 @@ public class Carpeta {
     ArrayList <JSONObject> contenido;
     ArrayList <String> compartido;
     
-    static int fileSize = 100;
+    int fileSize = 100;
 
     public Carpeta() { //Contructor por JSON
     }

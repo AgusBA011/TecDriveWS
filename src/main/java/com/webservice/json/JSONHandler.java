@@ -79,7 +79,14 @@ public class JSONHandler {
     
         String username = path.split("/")[0];
         
-        JSONObject verify = validarLimite(username, (int) (long) contenido.get("tamano"));
+        JSONObject verify;
+        
+        if ( ((String) contenido.get("tipo")).equals("carpeta") == false ){ //En caso de insertar una carpeta
+            verify = validarLimite(username, (long) contenido.get("tamano"));
+        }
+        else{
+            verify = validarLimite(username, 100);
+        }
         
         if(verify.containsKey("Error")){
             return verify;
@@ -247,7 +254,7 @@ public class JSONHandler {
         }
         //No lo encontró
         JSONObject response = new JSONObject ();
-        response.put("Error", "El elemento '" + nombre + "' no fue ecnontrado en la ruta actual.");
+        response.put("Error", "El elemento '" + nombre + "' no fue encontrado en la ruta actual.");
         return response; 
     }
     
