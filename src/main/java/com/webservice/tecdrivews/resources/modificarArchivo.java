@@ -1,10 +1,7 @@
 package com.webservice.tecdrivews.resources;
 
 import Models.Archivo;
-import Models.modelArchivo;
 import com.webservice.json.JSONHandler;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

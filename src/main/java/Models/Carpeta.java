@@ -43,7 +43,7 @@ public class Carpeta {
         
         setModificacion( getNowDate());
         
-        setCompartido( new JSONArray() );
+        setCompartido( new ArrayList <String>());
         
         setContenido (new JSONArray());
         

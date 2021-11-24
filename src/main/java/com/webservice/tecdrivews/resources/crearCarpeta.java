@@ -8,6 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /*
@@ -27,18 +28,43 @@ import org.json.simple.JSONObject;
 public class CrearCarpeta {
 
     @GET
-    public Response crearDirectorioEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre, @QueryParam("sobreescribir") String sobreescribir)
+    public Response crearDirectorioEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre, @QueryParam("sobreescribir") boolean sobreescribir)
     {        
         return Response
-            .ok(crearCarpeta(path, nombre)).header("Access-Control-Allow-Origin", "*")
+            .ok(crearCarpeta(path, nombre, sobreescribir)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     
-    public JSONObject crearCarpeta( String path, String nombre){   
+    public JSONObject crearCarpeta( String path, String nombre, boolean sobreescribir){   
         
-        Carpeta newDirectorio = new Carpeta(nombre);  
-        JSONObject carpetaJSON = newDirectorio.generateJSON();
-        JSONHandler handler = JSONHandler.getInstance();        
-        return handler.insertContenido(path, carpetaJSON);
+        
+        if(sobreescribir){
+        
+            Carpeta newCarpeta = new Carpeta();
+            
+            JSONHandler handler = JSONHandler.getInstance(); 
+        
+            JSONObject carpeta = handler.getDirectorio(path, nombre);
+            
+            carpeta.replace("creacion", newCarpeta.getNowDate());
+            
+            carpeta.replace("modificacion", newCarpeta.getNowDate());
+            
+            carpeta.replace("contenido", new JSONArray());
+            
+            carpeta.replace("tamano", 0);
+            
+            JSONObject response = new JSONObject ();
+            response.put("OK", "El archivo fue modificado con éxito");
+            return response;
+            
+        }
+        else{
+            Carpeta newDirectorio = new Carpeta(nombre);  
+            JSONObject carpetaJSON = newDirectorio.generateJSON();
+            JSONHandler handler = JSONHandler.getInstance();        
+            return handler.insertContenido(path, carpetaJSON);
+        
+        }   
     }  
 }
