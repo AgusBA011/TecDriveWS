@@ -9,6 +9,7 @@ import Models.Carpeta;
 import com.webservice.json.JSONHandler;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
@@ -37,23 +38,31 @@ public class Register {
         
         JSONObject response = new JSONObject();
         
-        if (! drive.containsKey(username)){ //Busca si la key ya existe.
+        if ( drive.containsKey(username) == false){ //Busca si la key ya existe.
         
-            //Insertar el nuevo user
+        //Insertar el nuevo user
 
-            //Crear carpeta root
-            JSONObject value = new JSONObject();           
+            //Crear carpeta root         
             Carpeta carpeta = new Carpeta("root");
+            
+            Carpeta compartidos = new Carpeta("Compartidos");
+            
+            JSONObject compJSON = compartidos.generateJSON();
+            
             JSONObject json = carpeta.generateJSON();
+            
+            JSONArray content = (JSONArray) json.get("contenido");
+            
+            content.add(compJSON);
             
             json.put("limite", bytes); //Agrega el limite de bytes del usuario.
             
             drive.put(username, json);//Insertar en el drive principal
-            handler.updateJSONFile();//Actualizar JSON, CASO UNICO DONDE SE UTILIZA ESTA FUNCION.
+            handler.updateJSONFile(username);//Actualizar JSON
             
             //Enviar response de éxito
             response.put("OK", "El usuario se ha creado con éxito");
-            return drive; 
+            return json; 
         }
         
         response.put("Error", "El nombre de usuario ya existe.");

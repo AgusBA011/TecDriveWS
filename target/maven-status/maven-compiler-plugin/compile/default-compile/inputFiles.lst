@@ -1,8 +1,11 @@
+C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\Models\modelArchivo.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\crearCarpeta.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\crearArchivo.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\Models\Carpeta.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\JAXRSConfiguration.java
+C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\CopiarArchivo.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\JsonHandler.java
+C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\Mover.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\getDrive.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\LogIn.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\Models\Archivo.java
@@ -10,5 +13,6 @@ C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\mai
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\json\JSONHandler.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\JavaEE8Resource.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\Register.java
+C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\SubirArchivo.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\DeleteF.java
 C:\Users\agust\OneDrive\Documents\NetBeansProjects\TecDriveWS\TecDriveWS\src\main\java\com\webservice\tecdrivews\resources\modificarArchivo.java

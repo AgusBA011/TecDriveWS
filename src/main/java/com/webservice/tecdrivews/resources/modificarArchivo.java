@@ -1,6 +1,11 @@
 package com.webservice.tecdrivews.resources;
 
+import Models.Archivo;
+import Models.modelArchivo;
 import com.webservice.json.JSONHandler;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
@@ -18,22 +23,24 @@ import org.json.simple.JSONObject;
  * @author agust
  */
 
-//crearArchivo?path=""&nombre=""&extension=""&contenido=""
+//modificarArchivo?path=""&nombre=""&extension=""&contenido=""
 
 @Path("modificarArchivo/")
 public class modificarArchivo {
 
     @GET
     public Response modificarArchivoEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre, 
-                                            @QueryParam("extension") String extension, @QueryParam("contenido") String contenido)
+                                        @QueryParam("extension") String extension, @QueryParam("contenido") String contenido, @QueryParam("sobreescribir") boolean sobreescribir)
     {        
+        //
+        contenido.replaceAll("%0A", "\n");
+                
         return Response
-            .ok(modificarArchivo(path, nombre, extension, contenido)).header("Access-Control-Allow-Origin", "*")
+            .ok(modificarArchivo(path, nombre, extension, contenido, sobreescribir)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     
-    
-    private JSONObject modificarArchivo( String path, String nombre, String extension, String contenido ){
+    private JSONObject modificarArchivo( String path, String nombre, String extension, String contenido, boolean sobreescribir ){
         
         JSONHandler handler = JSONHandler.getInstance(); 
         
@@ -41,20 +48,35 @@ public class modificarArchivo {
         
         JSONObject response = new JSONObject ();
         
-        try{
-            archivo.replace("contenido", contenido);
-            //FALTARÍA MODIFICAR EL ARCHIVO
+        if ( archivo.containsKey("Error")  ) {
+            response.put("Error", "El archivo '" + nombre + "' no fue encontrado.");
+            return response;
+        }
+        
+        if (sobreescribir){
+            Archivo newArchivo = new Archivo(nombre, extension, contenido);
             
-            //Respuesta
-            response.put("OK", "El archivo fue modificado con éxito");
-            return response;
-        
+            archivo.replace("contenido", contenido);
+            archivo.replace("modificacion",newArchivo.getNowDate());
+            archivo.replace("creacion",newArchivo.getNowDate());
+            archivo.replace("tamano",newArchivo.getStringSizeFile(contenido));
+            
+            ArrayList <String> empty = new ArrayList <String>();
+            archivo.replace("compartido", empty );
+            
         }
-        catch(Exception e){
-            response.put("Error", e);
-            return response;
-        
+        else{
+            Archivo newArchivo = new Archivo();
+            archivo.replace("contenido", contenido);
+            archivo.replace("modificacion",newArchivo.getNowDate());
+            archivo.replace("tamano",newArchivo.getStringSizeFile(contenido));  
         }
+        
+        handler.updateJSONFile(path.split("/")[0]);
+
+        //Respuesta
+        response.put("OK", "El archivo fue modificado con éxito");
+        return response;
     }
  
 }

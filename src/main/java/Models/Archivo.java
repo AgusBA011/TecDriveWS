@@ -41,11 +41,7 @@ public class Archivo {
         
         setTipo("archivo");
              
-        LocalDateTime now = LocalDateTime.now();
-        
-         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        
-        setCreacion( now.format(formatter));
+        setCreacion( getNowDate());
         
         setModificacion(this.creacion);
         
@@ -135,11 +131,17 @@ public class Archivo {
         catch(Exception e){
         
             return 0;
-        }
+        }   
+    }
+    
+    public String getNowDate(){
+    
+        LocalDateTime now = LocalDateTime.now();
         
-            
-            
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         
+        return now.format(formatter);
+    
     }
 
     public ArrayList<String> getCompartido() {

@@ -24,18 +24,17 @@ import org.json.simple.JSONObject;
 //crearArchivo?path=""&nombre=""
 
 @Path("crearDirectorio/")
-public class crearCarpeta {
+public class CrearCarpeta {
 
     @GET
-    public Response crearDirectorioEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre)
+    public Response crearDirectorioEndpoint(@QueryParam("path") String path, @QueryParam("nombre") String nombre, @QueryParam("sobreescribir") String sobreescribir)
     {        
         return Response
             .ok(crearCarpeta(path, nombre)).header("Access-Control-Allow-Origin", "*")
             .build();
     }
     
-    
-    private JSONObject crearCarpeta( String path, String nombre){   
+    public JSONObject crearCarpeta( String path, String nombre){   
         
         Carpeta newDirectorio = new Carpeta(nombre);  
         JSONObject carpetaJSON = newDirectorio.generateJSON();

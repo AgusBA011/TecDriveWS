@@ -77,6 +77,14 @@ public class JSONHandler {
     //Inserta un elemento en una ruta dada.
     public JSONObject insertContenido(String path, JSONObject contenido){
     
+        String username = path.split("/")[0];
+        
+        /*JSONObject verify = validarLimite(username, (int) contenido.get("tamano"));
+        
+        if(verify.containsKey("Error")){
+            return verify;
+        }*/
+        
         JSONArray directorio = getPath(path);
         JSONObject response = new JSONObject();
         
@@ -95,37 +103,28 @@ public class JSONHandler {
         
         directorio.add(contenido);
         response.put("OK", "Se insertó el contenido con éxito");
-        updateJSONFile();
+        updateJSONFile(username);
         return response; 
     }
     
     //Elimina un elemento en una ruta dada.
     public JSONObject deleteElement(String path, String nombre, String tiposArchivo){
-        JSONArray Directorio = getPath(path);
-        JSONObject resultado = new JSONObject();
-        
-        int flagDeleted = 0;
-        
-        for(int i = 0; i < Directorio.size(); i++){
-            
-            resultado = (JSONObject) Directorio.get(i);
-            
-            if( ( (String) resultado.get((Object) "nombre")).equals(nombre) && (resultado.get((Object) "extension").toString().equals(tiposArchivo) || resultado.get((Object) "tipo").toString().equals(tiposArchivo)))            { 
-                Directorio.remove(i);
-                flagDeleted = 1;
-            }
-        }
-        
+
         JSONObject response = new JSONObject();
-        if(flagDeleted == 1){
-            updateJSONFile();
-            response.put("OK", "Elemento(s) removido(s) correctamente");
+        JSONArray Directorio = getPath(path);
+        
+        JSONObject archivo = getElemento( path, nombre, tiposArchivo );
+              
+        if ( archivo.containsKey("Error") ) {
+            response.put("Error", "Hubo un problema al eliminar el elemento '" + nombre + "'");
             return response;
         }
-        response.put("Error", "Hubo un problema al eliminar el elemento " + nombre);
+          
+        Directorio.remove(archivo);
+       
+        updateJSONFile(path.split("/")[0]);
+        response.put("OK", "Elemento removido correctamente");
         return response;
-        //
-
     }
    
 
@@ -143,8 +142,6 @@ public class JSONHandler {
                 aux = (JSONObject) ContenidoJson.get(i);
                 if(aux.get((Object) "tipo").toString().equals("carpeta") && aux.get((Object) "nombre").toString().equals(listaPath[num])){
                     ContenidoJson = (JSONArray) aux.get((Object) "contenido");
-                    System.out.println(aux.get((Object) "tipo").toString() + "  "+ aux.get((Object) "nombre").toString());
-                    System.out.println("carpeta" + "  " + listaPath[num]);
                 }
                 else{
                     errores++;
@@ -152,8 +149,7 @@ public class JSONHandler {
                         JSONArray errorJson = new JSONArray();
                         errorJson.add((Object) "{'error':'La ruta definida no fue encontrada'}");
                         return errorJson;
-                    }
-                
+                    } 
                 }
             }   
         }
@@ -183,12 +179,14 @@ public class JSONHandler {
     }
     
     //Agarra el JSON actual y lo escribe en la ruta
-    public void updateJSONFile(){
+    public void updateJSONFile(String username){
     
         //Write into the file
             try (FileWriter file = new FileWriter(this.pathFile)) 
             {
-                file.write(this.json.toJSONString());                
+                file.write(this.json.toJSONString());
+
+                //actualizarTam( (JSONObject) getDrive(username) );
             } 
             catch (IOException ex) {
                 Logger.getLogger(JSONHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -198,6 +196,19 @@ public class JSONHandler {
     //Retornar toda la Database
     public JSONObject getJson() { 
         return json;
+    }
+    
+    public JSONObject getElemento( String path, String nombre, String tipoArchivo ){
+    
+        JSONObject element;
+        
+        if ( tipoArchivo.equals("carpeta") ){ //En caso de insertar una carpeta
+            element = getDirectorio(path, nombre );
+        }else{
+            element = getArchivo(path, nombre, tipoArchivo );
+        }
+        
+        return element;
     }
     
     
@@ -215,12 +226,11 @@ public class JSONHandler {
             if ( nombre.equals(objName) && extension.equals(objExt)){     
                 //Se encontró el file
                 return objectInArray;
-            } 
-            
+            }  
         }        
         //No lo encontró
         JSONObject response = new JSONObject ();
-        response.put("Error", "Hubo un problema");
+        response.put("Error", "El elemento '" + nombre + "' no fue encontrado en la ruta actual.");
         return response; 
     }
     
@@ -230,14 +240,53 @@ public class JSONHandler {
 
         for (int i=0; i < directorio.size(); i++){
             JSONObject objectInArray = (JSONObject) directorio.get(i);
-            if ( nombre.equals((String) objectInArray.get("nombre")) ){     
+            if ( nombre.equals((String) objectInArray.get("nombre"))  && ((String)objectInArray.get("tipo")).equals("carpeta")){     
                 //Se encontró el directorio
                 return objectInArray;
             }  
         }
         //No lo encontró
         JSONObject response = new JSONObject ();
-        response.put("Error", "Hubo un problema");
+        response.put("Error", "El elemento '" + nombre + "' no fue ecnontrado en la ruta actual.");
         return response; 
     }
+    
+    //Funcion recursiva que actualiza los tamaños de las carpetas.
+    public void actualizarTam( JSONObject carpeta ){
+    
+        int tam = 0;
+        
+        int auxSize = 0;
+        
+        JSONArray directorio = (JSONArray) carpeta.get("contenido");
+        
+        for( int i = 0; i < directorio.size(); i++ ){
+    
+            JSONObject objectInArray = (JSONObject) directorio.get(i);
+            
+            if ( ((String) objectInArray.get("tipo")).equals("carpeta") ){
+                actualizarTam( objectInArray ); 
+            }
+            auxSize = (int) objectInArray.get("tamano");
+                
+            tam = tam + auxSize;
+        }
+        
+        carpeta.replace("tamano", tam);
+    }
+    
+    
+    private JSONObject validarLimite(String username, int tam){
+    
+        JSONObject response = new JSONObject ();
+        
+        if (  ((int)getDrive(username).get("tamano")) + tam >  ((int)getDrive(username).get("limite")) ){
+            response.put("Error", "No hay espacio suficiente para agregar el elemento");
+            return response; 
+        }
+        return response; 
+    }
+    
+    
+    
 }

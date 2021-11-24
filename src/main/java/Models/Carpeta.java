@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import java.lang.String;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import org.json.simple.JSONArray;
 
 /**
  *
@@ -37,20 +38,14 @@ public class Carpeta {
         setTipo("carpeta");
         
         setTamanno(fileSize);
-               
-        LocalDateTime now = LocalDateTime.now();
         
-         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        setCreacion( getNowDate());
         
-        setCreacion( now.format(formatter));
+        setModificacion( getNowDate());
         
-        ArrayList <String> empty = new ArrayList <String>();
+        setCompartido( new JSONArray() );
         
-        setCompartido( empty );
-        
-        ArrayList <JSONObject> aux = new ArrayList <JSONObject>();
-        
-        setContenido (aux);
+        setContenido (new JSONArray());
         
     }
 
@@ -125,10 +120,20 @@ public class Carpeta {
         
         json.put("tamano",this.tamanno);  //Tamaño
         
-        json.put("compartido",this.compartido);  //Compartido
-        
         json.put("contenido",this.contenido);
         
+        json.put("compartido",this.compartido);  //Compartido
+        
         return json;
+    }
+    
+    public String getNowDate(){
+    
+        LocalDateTime now = LocalDateTime.now();
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        
+        return now.format(formatter);
+    
     }
 }
