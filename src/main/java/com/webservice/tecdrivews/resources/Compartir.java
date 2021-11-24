@@ -72,7 +72,7 @@ public class Compartir {
         //En caso de que no exista una carpeta, crearla.
         if ( JSONHandler.getInstance().getElemento(newPath, usuario, "carpeta").containsKey("Error") ){
             CrearCarpeta carp = new CrearCarpeta();
-            response = carp.crearCarpeta(newPath, usuario);
+            response = carp.crearCarpeta(newPath, usuario, false);
             response.put("OK", "Se creó la carpeta");
         }          
         return response;

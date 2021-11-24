@@ -79,16 +79,16 @@ public class JSONHandler {
     
         String username = path.split("/")[0];
         
-        /*JSONObject verify = validarLimite(username, (int) contenido.get("tamano"));
+        JSONObject verify = validarLimite(username, (int) (long) contenido.get("tamano"));
         
         if(verify.containsKey("Error")){
             return verify;
-        }*/
+        }
         
         JSONArray directorio = getPath(path);
         JSONObject response = new JSONObject();
         
-        JSONObject verify;
+        //JSONObject verify;
         
         if ( ((String) contenido.get("tipo")).equals("carpeta") ){ //En caso de insertar una carpeta
             verify = getDirectorio(path, (String) contenido.get("nombre") );
@@ -186,7 +186,7 @@ public class JSONHandler {
             {
                 file.write(this.json.toJSONString());
 
-                //actualizarTam( (JSONObject) getDrive(username) );
+                actualizarTam( (JSONObject) getDrive(username) );
             } 
             catch (IOException ex) {
                 Logger.getLogger(JSONHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -254,9 +254,9 @@ public class JSONHandler {
     //Funcion recursiva que actualiza los tamaños de las carpetas.
     public void actualizarTam( JSONObject carpeta ){
     
-        int tam = 0;
+        long tam = 0;
         
-        int auxSize = 0;
+        long auxSize = 0;
         
         JSONArray directorio = (JSONArray) carpeta.get("contenido");
         
@@ -267,7 +267,7 @@ public class JSONHandler {
             if ( ((String) objectInArray.get("tipo")).equals("carpeta") ){
                 actualizarTam( objectInArray ); 
             }
-            auxSize = (int) objectInArray.get("tamano");
+            auxSize = (long) objectInArray.get("tamano");
                 
             tam = tam + auxSize;
         }
@@ -276,11 +276,11 @@ public class JSONHandler {
     }
     
     
-    private JSONObject validarLimite(String username, int tam){
+    private JSONObject validarLimite(String username, long tam){
     
         JSONObject response = new JSONObject ();
         
-        if (  ((int)getDrive(username).get("tamano")) + tam >  ((int)getDrive(username).get("limite")) ){
+        if (  ((long)getDrive(username).get("tamano")) + tam >  ((long)getDrive(username).get("limite")) ){
             response.put("Error", "No hay espacio suficiente para agregar el elemento");
             return response; 
         }

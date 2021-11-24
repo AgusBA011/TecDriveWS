@@ -20,7 +20,7 @@ import org.json.simple.JSONObject;
 public class Register {
     
     @GET
-    public Response registerEndpoint(@QueryParam("nombre") String user, @QueryParam("bytes") int bytes){
+    public Response registerEndpoint(@QueryParam("nombre") String user, @QueryParam("bytes") long bytes){
         
         JSONObject response = createUser(user, bytes);
         
@@ -30,7 +30,7 @@ public class Register {
     }
     
     
-    private JSONObject createUser( String username, int bytes ){
+    private JSONObject createUser( String username, long bytes ){
     
         JSONHandler handler = JSONHandler.getInstance();
         
